@@ -21,12 +21,12 @@ def run_all_phenotypes(file):
   return filenames
 
 rule all:
-  input: run_all_phenotypes("/exports/igmm/eddie/haley-soay/traits.txt")
+  input: run_all_phenotypes("traits.txt")
    
 
 rule precorrect:
   input:
-    bfile=expand("/exports/igmm/eddie/haley-soay/GRMs/LOCO_P1_97/LOCO_{{chrom}}_2.{ext}", ext=["bim", "bed", "fam"]),
+    bfile=expand("LOCO_{{chrom}}_2.{ext}", ext=["bim", "bed", "fam"]),
     pheno="{trait}/Precorrecting/{trait}Phenotypes.txt",
     covar="{trait}/Precorrecting/{trait}Assoc.txt",
     qcovar="{trait}/Precorrecting/{trait}QAssoc.txt",
@@ -34,7 +34,7 @@ rule precorrect:
   output:
     blups="{trait}/Precorrecting/Chr{chrom}/{trait}_chr{chrom}.E.blup.indiv"
   params:
-    bfile="/exports/igmm/eddie/haley-soay/GRMs/LOCO_P1_97/LOCO_{chrom}_2", 
+    bfile="LOCO_{chrom}_2", 
     blups="{trait}/Precorrecting/Chr{chrom}/{trait}_chr{chrom}",
     rt="-l h_rt=04:00:00",
     mem="-l h_vmem=4G",
@@ -49,7 +49,7 @@ rule precorrect:
 
     while IFS=',' read -r key value ignore; do
       dict[$key]=$value
-    done < /exports/igmm/eddie/haley-soay/traits.txt
+    done < traits.txt
     
     module load igmm/mpi/gcc/mpich/3.1.4
     module load igmm/apps/dissect/1.15.2c
@@ -101,19 +101,19 @@ rule get_hap_snps:
     mkdir -p SNPs
     mkdir -p SNPs/Chr{wildcards.chrom}
     module load igmm/apps/R/4.1.3
-    Rscript /exports/igmm/eddie/haley-soay/3_RegionalHaplotypeMapping/SNP_Extractor.R {wildcards.hap} {wildcards.chrom}    
+    Rscript SNP_Extractor.R {wildcards.hap} {wildcards.chrom}    
     """
     
 rule run_hap_analysis:
   input:
-    bgen="/exports/igmm/eddie/haley-soay/Phasing/SHAPEIT4/Chr{chrom}.bgen",
+    bgen="Phasing/Chr{chrom}.bgen",
     pheno="{trait}/Precorrecting/Chr{chrom}/{trait}_chr{chrom}_Precorrected.txt",
     region="SNPs/Chr{chrom}/regional_snps_{chrom}_{hap}.txt"
   output:
     analysis="{trait}/Output/Chr{chrom}/{trait}_{chrom}_{hap}.reml.tests"
   params:
     output="{trait}/Output/Chr{chrom}/{trait}_{chrom}_{hap}",
-    bgen="/exports/igmm/eddie/haley-soay/Phasing/SHAPEIT4/Chr{chrom}",
+    bgen="Phasing/Chr{chrom}",
     rt="-l h_rt=14:00:00",
     mem="-l h_vmem=8G",
     pe="-pe sharedmem 2 -R y"      
@@ -128,7 +128,7 @@ rule run_hap_analysis:
     export LD_LIBRARY_PATH=${{MKLROOT}}/lib/intel64:$LD_LIBRARY_PATH
 
     module load igmm/mpi/gcc/mpich/3.1.4
-    mpirun -np 8 /exports/igmm/eddie/haley-lab/Eilidh/tests/dissect/src/dissect  --reml \
+    mpirun -np 8 dissect  --reml \
       --bgen {params.bgen} \
       --pheno {input.pheno}  \
       --pheno-col 1 \
