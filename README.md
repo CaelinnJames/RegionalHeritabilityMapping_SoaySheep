@@ -16,8 +16,8 @@
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-### Please note that these IDs are randomised - they are not the same between this version of the data and other versions published elsewhere. In addition, IDs here are randomised between traits. 
+### The data provided here is the pre-corrected phenotypes for each chromosome for each trait, the SNP locations for creating the haplotype blocks, and the relevant genetic files. Therefore, if running the analysis with the data provided here, skip the steps involved in the creation of the haplotype blocks, LOCO GRMs and pre-corrected phenotypes.
+#### Please note that these IDs are randomised - they are not the same between this version of the data and other versions published elsewhere. In addition, IDs here are randomised between traits. 
 
 
 Order to run: 
